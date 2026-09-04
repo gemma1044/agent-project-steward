@@ -51,6 +51,35 @@ def render_links(links: object) -> str:
     return " ".join(rendered)
 
 
+def render_gates(gates: object) -> str:
+    if not isinstance(gates, dict):
+        return ""
+    return " ".join(
+        f'<span class="gate"><b>{esc(name)}:</b> {esc(value)}</span>'
+        for name, value in gates.items()
+    )
+
+
+def render_screenshots(screenshots: object) -> str:
+    if not isinstance(screenshots, list) or not screenshots:
+        return '<span class="evidence-empty">No screenshots yet.</span>'
+    rendered: list[str] = []
+    for item in screenshots:
+        if not isinstance(item, dict):
+            continue
+        href = safe_href(item.get("href"))
+        label = esc(item.get("label", "Evidence"))
+        caption = esc(item.get("caption", ""))
+        if href is None:
+            rendered.append(f'<span class="evidence-empty">{label}</span>')
+        else:
+            rendered.append(
+                f'<a class="evidence-thumb" href="{esc(href)}" title="{caption}">'
+                f'<img loading="lazy" src="{esc(href)}" alt="{label}"><span>{label}</span></a>'
+            )
+    return "".join(rendered) or '<span class="evidence-empty">No screenshots yet.</span>'
+
+
 def require_list(data: dict[str, object], key: str) -> list[dict[str, object]]:
     value = data.get(key, [])
     if not isinstance(value, list):
@@ -73,10 +102,10 @@ def mission_rows(missions: list[dict[str, object]]) -> str:
             f'<td><span class="tag {state}">{esc(mission.get("status", "idle"))}</span><br><span class="code">{esc(mission.get("session", "unassigned"))}</span></td>'
             f'<td>{esc(mission.get("phase", ""))}</td>'
             f'<td class="round">{esc(mission.get("rounds", 0))}</td>'
-            f'<td>{esc(mission.get("change", ""))}</td>'
-            f'<td>{esc(mission.get("evidence", ""))}</td>'
+            f'<td>{esc(mission.get("change", ""))}<div class="correction">{esc(mission.get("corrections", ""))}</div></td>'
+            f'<td>{esc(mission.get("evidence", ""))}<div class="gates">{render_gates(mission.get("gates"))}</div></td>'
             f'<td>{esc(mission.get("next", ""))}</td>'
-            f'<td class="links">{render_links(mission.get("links"))}</td>'
+            f'<td class="links">{render_links(mission.get("links"))}<div class="gallery">{render_screenshots(mission.get("screenshots"))}</div></td>'
             "</tr>"
         )
     return "".join(rows)
@@ -96,6 +125,7 @@ def render_dashboard(data: dict[str, object]) -> str:
     missions = require_list(data, "missions")
     resources = require_list(data, "resources")
     decisions = require_list(data, "decisions")
+    evolution = require_list(data, "self_evolution")
     counts = {status: 0 for status in STATUSES}
     for mission in missions:
         counts[status_class(mission.get("status"))] += 1
@@ -112,7 +142,7 @@ def render_dashboard(data: dict[str, object]) -> str:
     .shell{{max-width:1500px;margin:auto;padding:28px}} .masthead{{padding:30px 32px;color:#f8fbff;background:var(--navy);border-radius:22px;box-shadow:0 16px 40px #17203214}}
     .eyebrow{{margin:0 0 8px;color:#9fc0fa;font:700 12px/1.4 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase}} h1{{margin:0;font-size:clamp(28px,4vw,48px);line-height:1.08}} .lede{{max-width:850px;color:#cbd8eb;line-height:1.7}} .stamp{{color:#dce7f7;font:600 12px ui-monospace,monospace}}
     .metrics{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 30px}} .metric{{padding:17px 18px;background:var(--panel);border:1px solid var(--line);border-radius:15px}} .metric b{{display:block;font-size:28px}} .metric span{{color:var(--muted);font-size:12px}}
-    section{{margin:28px 0}} h2{{font-size:20px}} .table-wrap{{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px}} table{{width:100%;min-width:900px;border-collapse:collapse}} .mission-table{{min-width:1220px}} th{{padding:12px 14px;background:#f7f9fc;border-bottom:1px solid var(--line);color:#566276;font-size:11px;text-align:left;text-transform:uppercase}} td{{padding:14px;border-bottom:1px solid #e9edf4;font-size:13px;line-height:1.5;vertical-align:top}} .mission{{font-weight:750}} .round{{font-family:ui-monospace,monospace;text-align:center}} .code{{font:11px ui-monospace,monospace;color:#40506a}} .tag{{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:750}} .active,.complete{{color:var(--green);background:var(--green-bg)}} .pending,.review{{color:var(--amber);background:var(--amber-bg)}} .blocked{{color:var(--red);background:var(--red-bg)}} .idle{{color:#5e697b;background:var(--gray-bg)}} .links a,.links span{{display:inline-block;margin:0 8px 6px 0}} .empty{{color:var(--muted);text-align:center}}
+    section{{margin:28px 0}} h2{{font-size:20px}} .table-wrap{{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px}} table{{width:100%;min-width:900px;border-collapse:collapse}} .mission-table{{min-width:1220px}} th{{padding:12px 14px;background:#f7f9fc;border-bottom:1px solid var(--line);color:#566276;font-size:11px;text-align:left;text-transform:uppercase}} td{{padding:14px;border-bottom:1px solid #e9edf4;font-size:13px;line-height:1.5;vertical-align:top}} .mission{{font-weight:750}} .round{{font-family:ui-monospace,monospace;text-align:center}} .code{{font:11px ui-monospace,monospace;color:#40506a}} .tag{{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:750}} .active,.complete{{color:var(--green);background:var(--green-bg)}} .pending,.review{{color:var(--amber);background:var(--amber-bg)}} .blocked{{color:var(--red);background:var(--red-bg)}} .idle{{color:#5e697b;background:var(--gray-bg)}} .links>a,.links>span{{display:inline-block;margin:0 8px 6px 0}} .empty{{color:var(--muted);text-align:center}} .correction{{margin-top:8px;color:var(--red)}} .gates{{display:grid;gap:4px;margin-top:8px}} .gate{{font-size:11px}} .gallery{{display:grid;grid-template-columns:repeat(2,minmax(110px,1fr));gap:8px;margin-top:10px}} .evidence-thumb{{overflow:hidden;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:10px;text-decoration:none}} .evidence-thumb img{{display:block;width:100%;height:72px;object-fit:cover;border-bottom:1px solid var(--line)}} .evidence-thumb span{{display:block;padding:6px;font-size:10px;font-weight:700}} .evidence-empty{{padding:8px;color:var(--muted);background:#f7f9fc;border:1px dashed var(--line);border-radius:8px;font-size:10px}}
     footer{{margin-top:32px;padding-top:20px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}} @media(max-width:760px){{.shell{{padding:14px}}.masthead{{padding:24px 20px}}.metrics{{grid-template-columns:repeat(2,1fr)}}}}
   </style>
 </head>
@@ -122,6 +152,7 @@ def render_dashboard(data: dict[str, object]) -> str:
   <section><h2>Mission status</h2><div class="table-wrap"><table class="mission-table"><thead><tr><th>Mission</th><th>Purpose</th><th>Session</th><th>Phase</th><th>Rounds</th><th>Latest change</th><th>Evidence</th><th>Next</th><th>Links</th></tr></thead><tbody>{mission_rows(missions)}</tbody></table></div></section>
   <section><h2>Resources</h2><div class="table-wrap"><table><thead><tr><th>Resource</th><th>Count</th><th>Status</th><th>Purpose</th></tr></thead><tbody>{simple_rows(resources, ['name','count','status','purpose'])}</tbody></table></div></section>
   <section><h2>Decisions</h2><div class="table-wrap"><table><thead><tr><th>Question</th><th>Status</th><th>Recommendation</th></tr></thead><tbody>{simple_rows(decisions, ['question','status','recommendation'])}</tbody></table></div></section>
+  <section><h2>Self-evolution</h2><div class="table-wrap"><table><thead><tr><th>Observed failure</th><th>Root cause</th><th>Rule change</th><th>Validation</th></tr></thead><tbody>{simple_rows(evolution, ['failure','root_cause','rule_change','validation'])}</tbody></table></div></section>
   <footer>Generated from structured JSON. Regenerate after material state changes and report those changes in conversation.</footer>
 </main></body></html>"""
 

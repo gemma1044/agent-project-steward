@@ -32,6 +32,35 @@ class DashboardTests(unittest.TestCase):
         rendered = MODULE.render_links([{"label": "bad", "href": "javascript:alert(1)"}])
         self.assertEqual(rendered, "<span>bad</span>")
 
+    def test_renders_gates_screenshots_and_self_evolution(self):
+        output = MODULE.render_dashboard(
+            {
+                "title": "Demo",
+                "missions": [
+                    {
+                        "name": "Mission",
+                        "gates": {"tests": "pass"},
+                        "screenshots": [{"label": "Proof", "href": "evidence/proof.png"}],
+                    }
+                ],
+                "resources": [],
+                "decisions": [],
+                "self_evolution": [
+                    {"failure": "missed callback", "root_cause": "soft rule", "rule_change": "hard callback", "validation": "pass"}
+                ],
+            }
+        )
+        self.assertIn("<b>tests:</b> pass", output)
+        self.assertIn('src="evidence/proof.png"', output)
+        self.assertIn("Self-evolution", output)
+        self.assertIn("missed callback", output)
+
+    def test_blocks_unsafe_screenshot_schemes(self):
+        rendered = MODULE.render_screenshots(
+            [{"label": "bad", "href": "javascript:alert(1)"}]
+        )
+        self.assertNotIn("<img", rendered)
+
     def test_example_renders(self):
         state = ROOT / "skills/project-steward/examples/dashboard-state.example.json"
         with tempfile.TemporaryDirectory() as directory:

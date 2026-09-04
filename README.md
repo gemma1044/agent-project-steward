@@ -9,6 +9,8 @@
 
 两者保持独立是有意设计：浏览代码是低风险只读动作；创建、续推和验收 Session 是项目治理动作。`project-steward` 可以选择调用 `repo-view`，但普通浏览请求不会加载整套调度协议。
 
+`project-steward` 保留 Codex 多任务协作机制，包括语义化标题、原 Session 优先、`wait_threads` 事件等待、heartbeat 巡检、`send_message_to_thread` 终态回传、上下文衰竭交接、独立复核和主动汇报。
+
 ## Dashboard
 
 项目看板由结构化 JSON 生成，不手工维护整份 HTML：
@@ -38,6 +40,8 @@ python3 -m unittest discover -s tests -v
 python3 scripts/check_public_release.py .
 python3 scripts/check_public_release.py . --deny private-project --deny private-domain.example
 ```
+
+把私有 Skill 改成公开版时必须采用“复制原文 → 逐节保留/泛化/删除 → 能力对账”的方式，禁止从零摘要重写。流程见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## English
 

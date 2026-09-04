@@ -11,11 +11,20 @@
       "session": "worker-session-1",
       "rounds": 2,
       "change": "Mapped three duplicate rule families.",
+      "corrections": "Rejected a second instruction-loading path.",
       "evidence": "Layer sizes and affected cases recorded.",
+      "gates": {
+        "implementation": "pending",
+        "tests": "pass",
+        "real_path": "pending",
+        "reviewable_evidence": "pass",
+        "independent_review": "pending"
+      },
       "next": "Freeze the first migration batch.",
       "links": [
         {"label": "Baseline", "href": "reports/baseline.md"}
-      ]
+      ],
+      "screenshots": []
     },
     {
       "name": "Independent behavioral review",
@@ -25,9 +34,18 @@
       "session": "reviewer-session",
       "rounds": 0,
       "change": "No review started.",
+      "corrections": "",
       "evidence": "Not applicable yet.",
+      "gates": {
+        "implementation": "pending",
+        "tests": "pending",
+        "real_path": "pending",
+        "reviewable_evidence": "pending",
+        "independent_review": "pending"
+      },
       "next": "Review the first completed batch.",
-      "links": []
+      "links": [],
+      "screenshots": []
     }
   ],
   "resources": [
@@ -43,6 +61,14 @@
       "question": "Approve one implementation session?",
       "status": "pending",
       "recommendation": "Approve after the baseline is reviewed."
+    }
+  ],
+  "self_evolution": [
+    {
+      "failure": "The public edition omitted task callbacks and title management.",
+      "root_cause": "A source-first redaction was replaced by a summary rewrite.",
+      "rule_change": "Preserve the canonical section map and justify every removal.",
+      "validation": "Protocol contract test covers the restored mechanisms."
     }
   ]
 }
