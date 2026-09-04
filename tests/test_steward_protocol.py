@@ -41,6 +41,13 @@ class StewardProtocolTests(unittest.TestCase):
         self.assertIn("同一轮对话显式提出申请", self.text)
         self.assertIn("## 自进化", self.text)
 
+    def test_pseudo_execution_warning_requires_dual_evidence_and_atomic_recovery(self):
+        self.assertIn("伪执行预警与纠偏消息", self.text)
+        self.assertIn("startedAt`–`completedAt", self.text)
+        self.assertIn("共享现场无法归因或证据冲突时，不得记 strike", self.text)
+        self.assertIn("下一条可立即执行的原子动作", self.text)
+        self.assertIn("阈值由仓库 local rules 配置", self.text)
+
 
 if __name__ == "__main__":
     unittest.main()
