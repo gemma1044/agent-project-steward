@@ -29,6 +29,14 @@ class PublicReleaseTests(unittest.TestCase):
             self.assertEqual(len(result), 1)
             self.assertIn("macOS user path", result[0])
 
+    def test_custom_deny_term_is_reported(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "note.md"
+            path.write_text("Project Lighthouse", encoding="utf-8")
+            result = MODULE.findings(Path(directory), ("lighthouse",))
+            self.assertEqual(len(result), 1)
+            self.assertIn("custom deny term", result[0])
+
 
 if __name__ == "__main__":
     unittest.main()

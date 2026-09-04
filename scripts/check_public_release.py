@@ -13,13 +13,15 @@ TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".toml", ".txt", ".html
 DENY_PATTERNS = {
     "macOS user path": re.compile(r"/Users/[^/\s'\"]+"),
     "Linux user path": re.compile(r"/home/[^/\s'\"]+"),
-    "private project name": re.compile(r"(?i)agent-harness|medeo|writer-project-manager"),
     "private service domain": re.compile(r"(?i)\.internal\b|\.corp\b"),
 }
 
 
-def findings(root: Path) -> list[str]:
+def findings(root: Path, deny_terms: tuple[str, ...] = ()) -> list[str]:
     issues: list[str] = []
+    patterns = dict(DENY_PATTERNS)
+    for index, term in enumerate(deny_terms, start=1):
+        patterns[f"custom deny term {index}"] = re.compile(re.escape(term), re.IGNORECASE)
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root)
         if (
@@ -31,7 +33,7 @@ def findings(root: Path) -> list[str]:
         ):
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
-        for label, pattern in DENY_PATTERNS.items():
+        for label, pattern in patterns.items():
             for match in pattern.finditer(text):
                 line = text.count("\n", 0, match.start()) + 1
                 issues.append(f"{relative}:{line}: {label}: {match.group(0)}")
@@ -41,8 +43,9 @@ def findings(root: Path) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("root", nargs="?", type=Path, default=Path.cwd())
+    parser.add_argument("--deny", action="append", default=[], help="Additional private term to reject")
     args = parser.parse_args()
-    issues = findings(args.root.resolve())
+    issues = findings(args.root.resolve(), tuple(args.deny))
     if issues:
         print("public release check failed:", file=sys.stderr)
         print("\n".join(f"- {issue}" for issue in issues), file=sys.stderr)

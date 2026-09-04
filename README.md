@@ -36,6 +36,7 @@ ln -s "$PWD/agent-project-steward/skills/repo-view" ~/.codex/skills/repo-view
 ```bash
 python3 -m unittest discover -s tests -v
 python3 scripts/check_public_release.py .
+python3 scripts/check_public_release.py . --deny private-project --deny private-domain.example
 ```
 
 ## English
