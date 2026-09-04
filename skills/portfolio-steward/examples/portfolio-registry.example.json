@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "children": [
+    {
+      "name": "example-service",
+      "path": "../example-service"
+    },
+    {
+      "name": "example-client",
+      "path": "../example-client"
+    }
+  ]
+}

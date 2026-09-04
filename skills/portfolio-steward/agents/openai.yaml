@@ -1,0 +1,4 @@
+interface:
+  display_name: "Portfolio Steward"
+  short_description: "Manage child stewards, lineage, and reusable evolution"
+  default_prompt: "Use $portfolio-steward to derive a repository steward from the canonical template and review pending evolution proposals."
