@@ -1,13 +1,10 @@
 # Agent Project Steward
 
-一个面向 Codex/Agent 工作区的开源工具包：用项目管家协调多个任务，用只读 Repo Viewer 查看代码现状与 Session Diff。
+一个面向 Codex/Agent 工作区的开源项目管家：协调多个 Mission 和 Session，管理资源申请、执行派发、巡检、回传与独立验收。
 
-仓库包含两个可独立安装、可组合使用的 Skill：
+仓库包含一个核心 Skill：
 
 - `project-steward`：按 Mission 管理多 Session 工作，先盘点与去重，再申请资源、派单、督办和独立验收。
-- `repo-view`：在本地浏览器查看源码树、工作区改动、分支相对基线的 Diff 与逐 commit Diff。
-
-两者保持独立是有意设计：浏览代码是低风险只读动作；创建、续推和验收 Session 是项目治理动作。`project-steward` 可以选择调用 `repo-view`，但普通浏览请求不会加载整套调度协议。
 
 `project-steward` 保留 Codex 多任务协作机制，包括语义化标题、原 Session 优先、`wait_threads` 事件等待、heartbeat 巡检、`send_message_to_thread` 终态回传、上下文衰竭交接、独立复核和主动汇报。
 
@@ -30,7 +27,6 @@ python3 skills/project-steward/scripts/render_dashboard.py \
 ```bash
 git clone https://github.com/gemma1044/agent-project-steward.git
 ln -s "$PWD/agent-project-steward/skills/project-steward" ~/.codex/skills/project-steward
-ln -s "$PWD/agent-project-steward/skills/repo-view" ~/.codex/skills/repo-view
 ```
 
 ## 验证
@@ -45,7 +41,7 @@ python3 scripts/check_public_release.py . --deny private-project --deny private-
 
 ## English
 
-Agent Project Steward is a two-skill toolkit for coordinating multi-session engineering work and inspecting repositories through a local, read-only browser. The dashboard is generated deterministically from JSON, and the two skills remain independently invocable.
+Agent Project Steward coordinates multi-session engineering work, resource approvals, task callbacks, periodic monitoring, evidence, and acceptance. Its dashboard is generated deterministically from JSON.
 
 ## License
 
