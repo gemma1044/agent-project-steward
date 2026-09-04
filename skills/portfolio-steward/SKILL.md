@@ -15,6 +15,7 @@ description: >-
 ## 层级与事实来源
 
 - `project-steward` 是仓库管家母版；每个子仓库拥有一份**物理完整副本**。
+- 副本中 `references/local/` 是仓库的 always-owned 规则包；它不参与上游 drift，也不得被上游覆盖。其余文件组成可升级 core。
 - 子仓库中的 `.steward/lineage.json`、`.steward/base/` 和 `.steward/evolutions/` 是派生关系与进化的持久事实来源。
 - 子管家通过跨 Session 消息向大总管提示变化，但消息只是实时通知；文件记录才是可追溯事实。
 - 不通过运行时继承或隐式 include 拼装子管家。复制后才允许做项目化修改。
@@ -30,8 +31,8 @@ python3 scripts/steward.py init /path/to/repository --name repository-steward
 初始化必须按顺序完成：
 
 1. 完整复制 `project-steward` 到目标仓库的 Skill 目录；
-2. 在 `.steward/base/` 保存未经修改的母版 snapshot；
-3. 写入 lineage 和章节处置清单，所有母版章节初始状态都是 `keep`；
+2. 在 `.steward/base/core/` 保存排除 `references/local/` 的 immutable core snapshot；
+3. 建立仓库独有的 `references/local/` 规则包，并写入 lineage 和章节处置清单；
 4. 再按“保留 / 泛化 / 下沉 / 删除”修改副本。删除必须记录原因。
 
 不得凭记忆重写、摘要重写或只复制部分规则。复制后用 `status` 检查当前副本相对 base 的修改，以及母版是否已有新版本：
@@ -51,7 +52,7 @@ python3 scripts/steward.py evolve /path/to/repository \
   --evidence "..." --validation "..." --privacy-review passed
 ```
 
-只有跨仓库成立、已有证据、已脱敏且不依赖项目名称、路径、端口、对象 ID、模型配额或业务例子的规则才可标记为 `upstream_candidate`。项目私有规则留在子管家，使用 `local` scope。
+先读 `project-steward/references/evolution-routing.md` 决定归属。只有跨仓库成立、已有证据、已脱敏且不依赖项目名称、路径、端口、对象 ID、模型配额或业务例子的规则才可标记为 `upstream_candidate`。项目私有规则直接维护在 `references/local/`，并使用 `local` scope。
 
 ## 吸收与发布
 
@@ -69,7 +70,7 @@ python3 scripts/steward.py harvest path/to/portfolio-registry.json --output harv
 4. 是否需要协议测试或前向验证；
 5. 合入后会影响哪些子管家。
 
-不要自动把候选写进母版。大总管整理审查结论与建议，创建可审阅 PR；用户批准合并后才发布新母版版本。后续下发使用三方同步：base snapshot、子管家当前版本、最新母版。首版 CLI 只建立该同步所需的 lineage、snapshot 和 drift 诊断；不自动执行三方合并。
+不要自动把候选写进母版。大总管整理审查结论与建议，创建可审阅 PR；用户批准合并后才发布新母版版本。后续下发使用三方同步：base core snapshot、子管家当前 core、最新母版 core，并永远排除 `references/local/`。CLI 只建立该同步所需的 lineage、snapshot 和 drift 诊断；不自动执行三方合并。
 
 ## 巡检与通知
 

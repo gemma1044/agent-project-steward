@@ -5,14 +5,15 @@
 ```text
 <repository>/
 ├── .codex/skills/<child-name>/      # Full, editable project-steward copy
+│   └── references/local/             # Always-owned repository rule pack
 └── .steward/
-    ├── lineage.json                 # Source version and child path
+    ├── lineage.json                 # Source version, child path, and local boundary
     ├── port-manifest.json           # Every source section and its disposition
-    ├── base/<child-name>/            # Immutable initial template snapshot
+    ├── base/core/                    # Immutable initial core snapshot
     └── evolutions/EV-*.json         # Durable self-evolution records
 ```
 
-`base/<child-name>` is never edited after `init`. It is the merge base for a future three-way sync.
+`base/core/` is never edited after `init`. It is the merge base for a future core-only three-way sync. `references/local/` is always owned by the child repository and is not part of that sync.
 
 ## Section disposition
 
@@ -26,11 +27,11 @@ No disposition permits silently dropping a platform collaboration mechanism.
 
 ## Evolution record
 
-An evolution record contains: ID, timestamp, child identity, base hash, scope, failure, root cause, rule change, evidence, validation and privacy review.
+An evolution record contains: ID, timestamp, child identity, core base hash, scope, failure, root cause, rule change, evidence, validation and privacy review.
 
 Scopes:
 
-- `local`: valuable only inside this child repository.
+- `local`: valuable only inside this child repository; update `references/local/`.
 - `upstream_candidate`: proposed for the canonical template after review.
 
 The harvest report groups exact normalized rule changes. It does not declare semantic equivalence and does not modify the canonical template.

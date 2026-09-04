@@ -17,6 +17,15 @@ Agent Stud 把这些问题变成一套明确的工作机制：先盘点和去重
 
 `project-steward` 保留 Codex 多任务协作机制，包括语义化标题、原 Session 优先、`wait_threads` 事件等待、heartbeat 巡检、`send_message_to_thread` 终态回传、上下文衰竭交接、独立复核和主动汇报。
 
+## Core 与仓库规则
+
+派生一个仓库管家时，Agent Stud 仍会先复制完整 Skill；但它把规则分为两个归属明确的层：
+
+- **Core**：Skill 本体和非 `local` reference，是可审查、可升级的跨仓库协作机制。
+- **Local**：`references/local/`，由该业务仓库 always-owned。这里存放架构、测试、发布、隐私和团队约定；上游更新永远不会覆盖它。
+
+管家每次自进化先判断归属：依赖当前仓库事实的规则直接进入 local；跨仓库成立且已脱敏、经验证的规则才交给大总管审查为 upstream candidate。这样不需要定期手工同步母版，也不会把一个仓库的私有约束误写成全局规则。
+
 ## Dashboard
 
 下面是由合成数据生成的公开示例；其中没有真实仓库、任务、会话或内部链接。

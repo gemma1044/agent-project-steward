@@ -45,15 +45,21 @@ class PortfolioStewardTests(unittest.TestCase):
         MODULE.command_init(args)
         return child, template
 
-    def test_init_makes_full_copy_snapshot_and_manifest_before_customization(self):
+    def test_init_makes_full_copy_core_snapshot_and_local_rules(self):
         with tempfile.TemporaryDirectory() as temporary:
             child, template = self.init_child(Path(temporary))
             skill = child / ".codex/skills/child-steward"
-            base = child / ".steward/base/child-steward"
-            self.assertEqual(MODULE.tree_hash(template), MODULE.tree_hash(skill))
-            self.assertEqual(MODULE.tree_hash(template), MODULE.tree_hash(base))
+            base = child / ".steward/base/core"
+            local = skill / "references/local/repository-rules.md"
+            self.assertTrue(local.is_file())
+            self.assertEqual(
+                MODULE.tree_hash(skill, (Path("references/local"),)), MODULE.tree_hash(base)
+            )
             manifest = json.loads((child / ".steward/port-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual([item["disposition"] for item in manifest["sections"]], ["keep", "keep"])
+            lineage = json.loads((child / ".steward/lineage.json").read_text(encoding="utf-8"))
+            self.assertEqual(lineage["schema_version"], 2)
+            self.assertEqual(lineage["local_rules_dir"], "references/local")
 
     def test_status_reports_child_drift_and_upstream_change(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -68,6 +74,15 @@ class PortfolioStewardTests(unittest.TestCase):
                 encoding="utf-8",
             )
             self.assertTrue(MODULE.status_report(child, template)["upstream_changed"])
+
+    def test_status_does_not_treat_always_owned_local_rules_as_core_drift(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            child, template = self.init_child(Path(temporary))
+            local = child / ".codex/skills/child-steward/references/local/repository-rules.md"
+            local.write_text(local.read_text(encoding="utf-8") + "\nLocal test command.\n", encoding="utf-8")
+            report = MODULE.status_report(child, template)
+            self.assertFalse(report["child_modified"])
+            self.assertEqual(report["local_rule_files"], 1)
 
     def test_evolve_and_harvest_keep_files_as_durable_source(self):
         with tempfile.TemporaryDirectory() as temporary:

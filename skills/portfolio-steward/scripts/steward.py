@@ -16,9 +16,10 @@ from typing import Any
 from uuid import uuid4
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 DEFAULT_SKILLS_DIR = ".codex/skills"
 DEFAULT_CONTROL_DIR = ".steward"
+DEFAULT_LOCAL_RULES_DIR = "references/local"
 HEADING_RE = re.compile(r"^(#{2,3})\s+(.+?)\s*$")
 
 
@@ -49,13 +50,40 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
-def tree_hash(root: Path) -> str:
+def tree_hash(root: Path, excluded_prefixes: tuple[Path, ...] = ()) -> str:
     digest = sha256()
     for path in sorted(item for item in root.rglob("*") if item.is_file()):
         relative = path.relative_to(root).as_posix().encode("utf-8")
+        relative_path = Path(relative.decode("utf-8"))
+        if any(relative_path == prefix or prefix in relative_path.parents for prefix in excluded_prefixes):
+            continue
         digest.update(relative + b"\0")
         digest.update(sha256(path.read_bytes()).digest())
     return digest.hexdigest()
+
+
+def copy_core_snapshot(source: Path, destination: Path, local_path: Path) -> None:
+    for path in sorted(item for item in source.rglob("*") if item.is_file()):
+        relative = path.relative_to(source)
+        if relative == local_path or local_path in relative.parents:
+            continue
+        copied = destination / relative
+        copied.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, copied)
+
+
+def ensure_local_rules(child: Path, local_path: Path) -> Path:
+    destination = child / local_path / "repository-rules.md"
+    if destination.exists():
+        return destination
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        "# Repository-local steward rules\n\n"
+        "This is the repository's always-owned rule pack. Record only local architecture, "
+        "tests, release gates, privacy boundaries, and team workflows here.\n",
+        encoding="utf-8",
+    )
+    return destination
 
 
 def headings(skill_dir: Path) -> list[dict[str, Any]]:
@@ -88,7 +116,7 @@ def git_revision(path: Path) -> str | None:
 def child_paths(target: Path, lineage: dict[str, Any]) -> tuple[Path, Path, Path]:
     control = target / lineage["control_dir"]
     child = target / lineage["child_skill"]
-    base = control / "base" / lineage["child_name"]
+    base = control / "base" / "core" if lineage.get("schema_version", 1) >= 2 else control / "base" / lineage["child_name"]
     return control, child, base
 
 
@@ -111,10 +139,11 @@ def command_init(args: argparse.Namespace) -> dict[str, Any]:
 
     skills_dir = Path(args.skills_dir)
     control_dir = Path(args.control_dir)
+    local_path = Path(DEFAULT_LOCAL_RULES_DIR)
     child = target / skills_dir / args.name
     control = target / control_dir
     lineage_path = control / "lineage.json"
-    base = control / "base" / args.name
+    base = control / "base" / "core"
     manifest_path = control / "port-manifest.json"
     collisions = [path for path in (child, lineage_path, base, manifest_path) if path.exists()]
     if collisions:
@@ -122,15 +151,18 @@ def command_init(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError(f"refusing to overwrite existing steward files: {formatted}")
 
     shutil.copytree(template, child)
-    shutil.copytree(template, base)
+    local_rules = ensure_local_rules(child, local_path)
+    copy_core_snapshot(child, base, local_path)
     snapshot_hash = tree_hash(base)
-    source_headings = headings(base)
+    source_headings = headings(child)
     lineage = {
         "schema_version": SCHEMA_VERSION,
         "created_at": now(),
         "control_dir": control_dir.as_posix(),
         "child_name": args.name,
         "child_skill": child.relative_to(target).as_posix(),
+        "local_rules_dir": local_path.as_posix(),
+        "core_excludes": [local_path.as_posix()],
         "upstream": {
             "skill": "skills/project-steward",
             "revision": git_revision(toolkit_root()),
@@ -148,6 +180,7 @@ def command_init(args: argparse.Namespace) -> dict[str, Any]:
         "target": str(target),
         "child_skill": str(child),
         "base_snapshot": str(base),
+        "local_rules": str(local_rules),
         "lineage": str(lineage_path),
         "manifest": str(manifest_path),
         "source_snapshot_sha256": snapshot_hash,
@@ -158,12 +191,16 @@ def status_report(target: Path, template: Path | None = None) -> dict[str, Any]:
     lineage = load_lineage(target)
     control, child, base = child_paths(target, lineage)
     manifest = read_json(control / "port-manifest.json")
+    local_value = lineage.get("local_rules_dir")
+    local_path = Path(local_value) if isinstance(local_value, str) and local_value else None
+    excluded = (local_path,) if local_path else ()
     base_hash = tree_hash(base)
-    child_hash = tree_hash(child)
+    child_hash = tree_hash(child, excluded)
     expected = {item["title"] for item in manifest.get("sections", []) if isinstance(item, dict)}
     current = {item["title"] for item in headings(child)}
     source = template or default_template()
-    upstream_hash = tree_hash(source) if source.is_dir() else None
+    upstream_hash = tree_hash(source, excluded) if source.is_dir() else None
+    local_rules = child / local_path if local_path else None
     return {
         "target": str(target),
         "child_skill": str(child),
@@ -172,6 +209,8 @@ def status_report(target: Path, template: Path | None = None) -> dict[str, Any]:
         "child_modified": base_hash != child_hash,
         "upstream_hash": upstream_hash,
         "upstream_changed": upstream_hash is not None and upstream_hash != base_hash,
+        "local_rules_dir": str(local_rules) if local_rules else None,
+        "local_rule_files": len(list(local_rules.rglob("*"))) if local_rules and local_rules.is_dir() else 0,
         "missing_source_sections": sorted(expected - current),
         "added_child_sections": sorted(current - expected),
         "evolution_count": len(list((control / "evolutions").glob("EV-*.json"))),
