@@ -144,6 +144,16 @@ Session 无法继续、工作区冲突或确实值得并发时，先向用户说
 
 新 Session 接管后，旧 Session 标为“已交接，停止执行”，禁止两边同时修改同一 Mission。未经用户批准不得新增用户可见 Session；等待授权期间仍要完成交接包、分支和 diff 盘点。
 
+### Worktree 与服务来源证据
+
+执行 Session 的任务 cwd、实际 Git worktree、浏览器 URL 背后的服务进程是三种不同身份。端口可访问、页面显示正确数据或任务工具显示 cwd，都不能单独证明服务加载了本次 worktree；跨回合后旧 cwd 也可能只是陈旧元数据。
+
+接管、恢复或做 UI / E2E 验收前，记录并核对目标现场的 `pwd -P`、Git top-level、branch、HEAD 和限定的 dirty 文件。目录不存在或 Git 根不符时立即停止写入，不得静默退回主仓或另一份 worktree。
+
+复用既有服务前，核验监听 PID 的 cwd 或启动命令是否指向目标 worktree。无法证明时，从目标 worktree 启动独立服务，并记录启动命令、PID 或 exec 标识、端口、worktree、HEAD 和健康检查。不得用全局 clean 或宽泛杀进程影响其他 Session。
+
+每个用于验收的 URL、截图或 E2E 结果都绑定这份身份凭证。服务来源不明时，它只能作为历史或数据参考，不能验收本次代码；跨回合重验 worktree 是否存在及 PID cwd。发现多服务来源不明是正确的证据边界，不记为伪执行；管家应派发“核验 PID cwd”或“从目标 worktree 启独立服务”的原子动作。
+
 ## 五门完成标准
 
 Mission 只有同时满足以下适用门槛才可完成：

@@ -48,6 +48,12 @@ class StewardProtocolTests(unittest.TestCase):
         self.assertIn("下一条可立即执行的原子动作", self.text)
         self.assertIn("阈值由仓库 local rules 配置", self.text)
 
+    def test_worktree_and_service_provenance_are_required_for_ui_acceptance(self):
+        self.assertIn("Worktree 与服务来源证据", self.text)
+        self.assertIn("任务 cwd、实际 Git worktree、浏览器 URL 背后的服务进程是三种不同身份", self.text)
+        self.assertIn("核验监听 PID 的 cwd 或启动命令", self.text)
+        self.assertIn("服务来源不明时，它只能作为历史或数据参考", self.text)
+
 
 if __name__ == "__main__":
     unittest.main()
