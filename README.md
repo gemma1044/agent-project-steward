@@ -1,21 +1,34 @@
-# Agent Project Steward
+# Agent Stud
 
-一个面向 Codex/Agent 工作区的开源项目管家：协调多个 Mission 和 Session，管理资源申请、执行派发、巡检、回传与独立验收。
+**Agent Stud 是给多 Agent 工程团队用的项目管家。** 当一个仓库里同时跑着多条 Mission、多个 Codex Session 和多轮评审时，它负责把分散的工作重新组织成可追踪、可验收、可进化的项目控制面。
 
-仓库包含一个核心 Skill：
+## 解决什么问题
 
-- `project-steward`：按 Mission 管理多 Session 工作，先盘点与去重，再申请资源、派单、督办和独立验收。
+Agent 项目很容易出现这些问题：同一需求被多个 Session 重复做；一个 Session 表面完成但没有跑真实链路；关键反馈没派回拥有上下文的原任务；任务标题、证据和下一步散落在长对话里；一个仓库积累的好做法也无法安全地复用到下一个仓库。
+
+Agent Stud 把这些问题变成一套明确的工作机制：先盘点和去重，再按 Mission 派单；优先把问题派回原 Session；等待事件、定时巡检和终态回传；以测试、真实路径和独立复核作为验收门；最后把已经验证的改进沉淀为可复用的管家能力。
+
+## 包含什么
+
+- `project-steward`：仓库管家。协调单个仓库里的 Mission、Session、资源申请、回传和验收。
+- `portfolio-steward`：大总管。把 `project-steward` 完整复制到新仓库，记录复制血缘和本地定制，并汇总子管家的可复用进化候选。
+
+对外叫 **Agent Stud**；为兼容已有安装和调用方式，核心 Skill 的技术标识仍是 `project-steward`。
 
 `project-steward` 保留 Codex 多任务协作机制，包括语义化标题、原 Session 优先、`wait_threads` 事件等待、heartbeat 巡检、`send_message_to_thread` 终态回传、上下文衰竭交接、独立复核和主动汇报。
 
 ## Dashboard
+
+下面是由合成数据生成的公开示例；其中没有真实仓库、任务、会话或内部链接。
+
+![Agent Stud dashboard demo](docs/assets/agent-stud-dashboard-demo.png)
 
 项目看板由结构化 JSON 生成，不手工维护整份 HTML：
 
 ```bash
 python3 skills/project-steward/scripts/render_dashboard.py \
   skills/project-steward/examples/dashboard-state.example.json \
-  /tmp/project-steward-dashboard.html
+  /tmp/agent-stud-dashboard.html
 ```
 
 输出是零依赖的单文件 HTML，可直接在浏览器打开。输入字段见 `skills/project-steward/references/dashboard-schema.md`。
@@ -41,7 +54,7 @@ python3 scripts/check_public_release.py . --deny private-project --deny private-
 
 ## English
 
-Agent Project Steward coordinates multi-session engineering work, resource approvals, task callbacks, periodic monitoring, evidence, and acceptance. Its dashboard is generated deterministically from JSON.
+Agent Stud is a project steward for multi-agent engineering work. It coordinates missions and Codex sessions, checks evidence and acceptance gates, and lets a portfolio steward safely carry proven improvements from child repositories back to the canonical template.
 
 ## License
 

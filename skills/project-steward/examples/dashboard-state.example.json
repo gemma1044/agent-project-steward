@@ -1,18 +1,18 @@
 {
-  "title": "Project Steward",
-  "subtitle": "Mission-oriented project control",
-  "updated_at": "2026-01-01 12:00 UTC",
+  "title": "Agent Stud · Atlas Workspace",
+  "subtitle": "Synthetic dashboard data for the public demo",
+  "updated_at": "2026-09-04 12:00 UTC",
   "missions": [
     {
-      "name": "Reduce always-on instructions",
-      "note": "Move workflow-only guidance out of the global layer without changing behavior.",
+      "name": "M-101 · Improve task intake",
+      "note": "A fictional mission used only to demonstrate the dashboard layout.",
       "status": "active",
-      "phase": "baseline and ownership map",
-      "session": "worker-session-1",
-      "rounds": 2,
-      "change": "Mapped three duplicate rule families.",
-      "corrections": "Rejected a second instruction-loading path.",
-      "evidence": "Layer sizes and affected cases recorded.",
+      "phase": "implementation review",
+      "session": "session-alpha",
+      "rounds": 3,
+      "change": "Captured the current state and validation plan.",
+      "corrections": "One duplicate task was closed.",
+      "evidence": "Synthetic test and review records attached.",
       "gates": {
         "implementation": "pending",
         "tests": "pass",
@@ -20,22 +20,20 @@
         "reviewable_evidence": "pass",
         "independent_review": "pending"
       },
-      "next": "Freeze the first migration batch.",
-      "links": [
-        {"label": "Baseline", "href": "reports/baseline.md"}
-      ],
+      "next": "Request independent acceptance.",
+      "links": [],
       "screenshots": []
     },
     {
-      "name": "Independent behavioral review",
-      "note": "Re-run cases after each migration batch.",
+      "name": "M-102 · Review acceptance evidence",
+      "note": "A second fictional mission illustrating a pending review.",
       "status": "pending",
-      "phase": "waiting for implementation",
-      "session": "reviewer-session",
+      "phase": "waiting for evidence",
+      "session": "session-beta",
       "rounds": 0,
-      "change": "No review started.",
+      "change": "Awaiting the simulated implementation result.",
       "corrections": "",
-      "evidence": "Not applicable yet.",
+      "evidence": "No external system or private artifact is referenced.",
       "gates": {
         "implementation": "pending",
         "tests": "pending",
@@ -43,32 +41,32 @@
         "reviewable_evidence": "pending",
         "independent_review": "pending"
       },
-      "next": "Review the first completed batch.",
+      "next": "Check the acceptance gates.",
       "links": [],
       "screenshots": []
     }
   ],
   "resources": [
     {
-      "name": "Implementation session",
-      "count": 1,
-      "status": "pending approval",
-      "purpose": "Own one prompt migration batch at a time."
+      "name": "Review capacity",
+      "count": 2,
+      "status": "available",
+      "purpose": "Synthetic capacity for the public dashboard example."
     }
   ],
   "decisions": [
     {
-      "question": "Approve one implementation session?",
-      "status": "pending",
-      "recommendation": "Approve after the baseline is reviewed."
+      "question": "Start a separate acceptance review?",
+      "status": "ready",
+      "recommendation": "Use a session without implementation context."
     }
   ],
   "self_evolution": [
     {
-      "failure": "The public edition omitted task callbacks and title management.",
-      "root_cause": "A source-first redaction was replaced by a summary rewrite.",
-      "rule_change": "Preserve the canonical section map and justify every removal.",
-      "validation": "Protocol contract test covers the restored mechanisms."
+      "failure": "A fictional update lacked an explicit completion signal.",
+      "root_cause": "The sample workflow did not require a final callback.",
+      "rule_change": "Require a short completion message with validation evidence.",
+      "validation": "A synthetic review scenario confirms the rule."
     }
   ]
 }

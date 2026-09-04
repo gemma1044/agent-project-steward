@@ -121,7 +121,7 @@ def simple_rows(items: list[dict[str, object]], columns: list[str]) -> str:
 
 
 def render_dashboard(data: dict[str, object]) -> str:
-    title = str(data.get("title") or "Project Steward")
+    title = str(data.get("title") or "Agent Stud")
     missions = require_list(data, "missions")
     resources = require_list(data, "resources")
     decisions = require_list(data, "decisions")

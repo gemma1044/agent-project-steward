@@ -8,7 +8,7 @@ description: >-
   task or a simple technical question.
 ---
 
-# Project Steward（Codex 多 Session 管家）
+# Agent Stud（Project Steward / Codex 多 Session 管家）
 
 ## 角色
 
