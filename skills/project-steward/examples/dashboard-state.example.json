@@ -1,0 +1,48 @@
+{
+  "title": "Project Steward",
+  "subtitle": "Mission-oriented project control",
+  "updated_at": "2026-01-01 12:00 UTC",
+  "missions": [
+    {
+      "name": "Reduce always-on instructions",
+      "note": "Move workflow-only guidance out of the global layer without changing behavior.",
+      "status": "active",
+      "phase": "baseline and ownership map",
+      "session": "worker-session-1",
+      "rounds": 2,
+      "change": "Mapped three duplicate rule families.",
+      "evidence": "Layer sizes and affected cases recorded.",
+      "next": "Freeze the first migration batch.",
+      "links": [
+        {"label": "Baseline", "href": "reports/baseline.md"}
+      ]
+    },
+    {
+      "name": "Independent behavioral review",
+      "note": "Re-run cases after each migration batch.",
+      "status": "pending",
+      "phase": "waiting for implementation",
+      "session": "reviewer-session",
+      "rounds": 0,
+      "change": "No review started.",
+      "evidence": "Not applicable yet.",
+      "next": "Review the first completed batch.",
+      "links": []
+    }
+  ],
+  "resources": [
+    {
+      "name": "Implementation session",
+      "count": 1,
+      "status": "pending approval",
+      "purpose": "Own one prompt migration batch at a time."
+    }
+  ],
+  "decisions": [
+    {
+      "question": "Approve one implementation session?",
+      "status": "pending",
+      "recommendation": "Approve after the baseline is reviewed."
+    }
+  ]
+}

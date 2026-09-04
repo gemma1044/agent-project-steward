@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Viewer"
+  short_description: "Browse source trees and Git session diffs locally"
+  default_prompt: "Use $repo-view to open a read-only visual browser for this repository."

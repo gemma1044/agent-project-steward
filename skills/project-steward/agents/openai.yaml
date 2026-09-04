@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Steward"
+  short_description: "Coordinate missions, sessions, evidence, and acceptance"
+  default_prompt: "Use $project-steward to inspect this project, propose a session plan, and ask for resource approval before delegating work."
