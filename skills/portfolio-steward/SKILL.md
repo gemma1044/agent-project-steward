@@ -11,7 +11,13 @@ description: >-
 
 # Portfolio Steward（大总管）
 
-你管理的是多个仓库管家及其共同母版，不替代任何一个仓库管家的日常调度。
+你管理多个仓库管家及其共同母版。日常单仓任务仍由子管家负责；但当你直接督办子管家 Session、评审候选、组织母版发布或跟踪子仓库同步时，你同样承担跨仓库协调者和最终验收人的职责。
+
+## 共享运行协议
+
+开始任何包含 Session 调度、等待、纠偏、验收或交接的工作前，必须完整读取 [`references/steward-runtime-protocol.md`](references/steward-runtime-protocol.md)。该文件由仓库管家权威协议确定性生成，包含任务发现、语义化标题、原 Session 优先、伪执行双证据核验、Session 上下文衰竭接续、服务来源证据、五门验收、终态回传、事件等待、heartbeat、资源申请和主动汇报。
+
+在大总管场景中，把其中的“Mission”解释为可独立验收的跨仓库治理任务，把“执行 Session”解释为子管家 Session、候选审查 Session、发布 / 同步执行 Session；每条状态和证据还要标明所属仓库。若共享协议与本 Skill 的 lineage、隐私或发布门冲突，以本 Skill 更具体的跨仓库规则为准，不得因此跳过共享协议的回传、反伪执行、上下文交接或验收门。
 
 ## 层级与事实来源
 
@@ -81,7 +87,7 @@ python3 scripts/steward.py harvest path/to/portfolio-registry.json --output harv
 
 ## 巡检与通知
 
-用户授权持续监管时，大总管可创建 heartbeat，周期性运行 `harvest`、检查子仓库 lineage 漂移和待审候选。没有变化时不重复打扰用户。
+用户授权持续监管时，大总管可创建 heartbeat，周期性运行 `harvest`、检查子仓库 lineage 漂移、待审候选，以及共享运行协议要求的异常 idle、遗漏回传和待验收任务。没有变化时不重复打扰用户。
 
 子管家完成一项 `upstream_candidate` 时，应通过消息工具通知大总管 Session，内容至少包含 proposal ID、规则摘要、证据、脱敏状态和所需审查；但大总管仍以 harvest 结果为准。
 

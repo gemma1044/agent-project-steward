@@ -17,6 +17,15 @@ Agent Stud 把这些问题变成一套明确的工作机制：先盘点和去重
 
 `project-steward` 保留 Codex 多任务协作机制，包括语义化标题、原 Session 优先、`wait_threads` 事件等待、heartbeat 巡检、`send_message_to_thread` 终态回传、上下文衰竭交接、独立复核和主动汇报。
 
+大总管直接督办跨仓库 Session 时也使用同一套运行协议。权威正文仍在 `project-steward/SKILL.md`；仓库通过确定性脚本生成 `portfolio-steward` 内部的自包含副本，避免安装后依赖跨目录引用：
+
+```bash
+python3 scripts/sync_runtime_protocol.py
+python3 scripts/sync_runtime_protocol.py --check
+```
+
+修改仓库管家运行协议后必须重新生成；CI 会在投影过期时失败。该同步只负责两级管家的运行协议，不等于把母版升级自动应用到子仓库。
+
 ## Core 与仓库规则
 
 派生一个仓库管家时，Agent Stud 仍会先复制完整 Skill；但它把规则分为两个归属明确的层：
