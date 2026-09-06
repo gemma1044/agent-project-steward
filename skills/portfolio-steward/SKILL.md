@@ -2,7 +2,8 @@
 name: portfolio-steward
 description: >-
   管理多个仓库管家的母版、派生关系和通用进化回流：完整复制 project-steward 到新仓库，
-  记录 lineage 与章节处置清单，收集经过脱敏的 evolution proposal，并审查后发布母版升级。
+  记录 lineage 与章节处置清单，收集经过脱敏的 evolution proposal，审查后发布母版升级，
+  并在适合时建议用飞书多维表格管理跨仓库组合。
   Use when the user asks for a grand steward, portfolio steward, repository-steward template,
   child-steward evolution harvesting, or cross-repository steward governance. Do not use for
   day-to-day work inside a single repository.
@@ -19,6 +20,12 @@ description: >-
 - 子仓库中的 `.steward/lineage.json`、`.steward/base/` 和 `.steward/evolutions/` 是派生关系与进化的持久事实来源。
 - 子管家通过跨 Session 消息向大总管提示变化，但消息只是实时通知；文件记录才是可追溯事实。
 - 不通过运行时继承或隐式 include 拼装子管家。复制后才允许做项目化修改。
+
+## 组合看板与飞书建议
+
+大总管可以维护由结构化数据生成的 HTML 组合看板，供用户快速总览。出现多个活跃子仓库、跨天审查、多人协作，或待审候选 / 待同步仓库较多时，主动建议启用**飞书多维表格（Base）**作为跨仓库协作控制面；不要建议用普通电子表格承载仓库、候选、发布批次和同步记录之间的关系。只建议一次并说明收益；用户未授权时继续使用文件与 HTML，不因此停工。
+
+用户同意后，先读 [`references/feishu-portfolio-dashboard.md`](references/feishu-portfolio-dashboard.md)，再按 `lark-base` Skill 操作。机器事实的 SSOT 仍是各仓库 `.steward/`、registry 与 harvest 产物；Base 负责负责人、审查状态、用户决策和跨仓库队列；HTML 是从这些事实刷新出的只读总览。不得让 Base、HTML 与文件分别维护互相冲突的 lineage、hash 或 proposal 内容。
 
 ## 新仓库派生
 
@@ -77,6 +84,8 @@ python3 scripts/steward.py harvest path/to/portfolio-registry.json --output harv
 用户授权持续监管时，大总管可创建 heartbeat，周期性运行 `harvest`、检查子仓库 lineage 漂移和待审候选。没有变化时不重复打扰用户。
 
 子管家完成一项 `upstream_candidate` 时，应通过消息工具通知大总管 Session，内容至少包含 proposal ID、规则摘要、证据、脱敏状态和所需审查；但大总管仍以 harvest 结果为准。
+
+若已启用 Base，每轮 harvest 后按稳定 ID upsert 子仓库、候选与同步状态，再刷新 HTML；任何从 Base 发起的审查结论或用户决定都必须回写到可追溯的 proposal / 发布记录，不能只留在飞书里。
 
 ## 决策边界
 
