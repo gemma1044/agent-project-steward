@@ -45,6 +45,16 @@ class StewardProtocolTests(unittest.TestCase):
         self.assertIn("默认可建议 10 分钟", self.text)
         self.assertIn("不能替代终态回传与事件等待", self.text)
 
+    def test_periodic_patrol_reconciles_work_ledger_and_sessions(self):
+        self.assertIn("周期巡检必须做双源对账", self.text)
+        self.assertIn("待办账本 SSOT", self.text)
+        self.assertIn("Codex Session 是执行资源", self.text)
+        self.assertIn("明确包含“待办”", self.text)
+        self.assertIn("优先续推仍可用的原 Session", self.text)
+        self.assertIn("登记为“孤儿执行”", self.text)
+        self.assertIn("不让执行 Session 空等占用资源", self.text)
+        self.assertIn("巡检只扫 Session / 旧 Markdown", self.text)
+
     def test_review_handoff_resource_and_self_evolution_are_preserved(self):
         self.assertIn("复核不能排队停工", self.text)
         self.assertIn("Session 上下文衰竭与接续", self.text)
