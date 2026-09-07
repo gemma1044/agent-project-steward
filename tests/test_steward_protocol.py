@@ -54,6 +54,14 @@ class StewardProtocolTests(unittest.TestCase):
         self.assertIn("核验监听 PID 的 cwd 或启动命令", self.text)
         self.assertIn("服务来源不明时，它只能作为历史或数据参考", self.text)
 
+    def test_partial_acceptance_requires_implementation_closure(self):
+        self.assertIn("“部分接受”必须继续实施", self.text)
+        self.assertIn("关联原 Mission 与实验", self.text)
+        self.assertIn("未接受语义", self.text)
+        self.assertIn("合入正式基线并完成最终验收", self.text)
+        self.assertIn("用户明确决定暂缓实施", self.text)
+        self.assertIn("不得用“实验已结束”", self.text)
+
 
 if __name__ == "__main__":
     unittest.main()

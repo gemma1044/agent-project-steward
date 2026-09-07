@@ -38,6 +38,9 @@ class RuntimeProtocolSyncTests(unittest.TestCase):
             "wait_threads",
             "heartbeat 定时巡检",
             "非绿灯与资源申请",
+            "“部分接受”必须继续实施",
+            "关联原 Mission 与实验",
+            "用户明确决定暂缓实施",
             "每轮巡检的最小收尾",
         ):
             self.assertIn(anchor, text)
