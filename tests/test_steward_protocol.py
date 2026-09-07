@@ -22,6 +22,16 @@ class StewardProtocolTests(unittest.TestCase):
         self.assertIn("【当前状态】语义化目标（可选编号）", self.text)
         self.assertIn("clientThreadId", self.text)
 
+    def test_steward_identity_titles_are_stable(self):
+        self.assertIn("<仓库名> 管家", self.text)
+        self.assertIn("Agent Harness Prompt 管家（Sol｜总控）", self.text)
+        self.assertIn("标题最前面禁止添加", self.text)
+        self.assertIn("READY、REVIEW、BLOCKED、待目检、待用户决策", self.text)
+        self.assertIn("不通过改写管家 Session 标题表达", self.text)
+        self.assertIn("普通执行 / 评审 Session", self.text)
+        self.assertIn("恢复稳定管家标题", self.text)
+        self.assertIn("不得因 Mission 状态变化反复重命名", self.text)
+
     def test_terminal_callback_protocol_is_hard_requirement(self):
         self.assertIn("send_message_to_thread", self.text)
         self.assertIn("最后一个工具动作", self.text)
