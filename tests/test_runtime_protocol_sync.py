@@ -38,14 +38,17 @@ class RuntimeProtocolSyncTests(unittest.TestCase):
             "wait_threads",
             "heartbeat 定时巡检",
             "非绿灯与资源申请",
-            "“部分接受”必须继续实施",
-            "关联原 Mission 与实验",
+            "混合结论必须拆成原子实验记录",
+            "不得提供或显示“部分接受”",
+            "共享同一 Run",
+            "调用数与费用记为 0",
             "用户明确决定暂缓实施",
             "每轮巡检的最小收尾",
         ):
             self.assertIn(anchor, text)
         self.assertIn("feishu-portfolio-dashboard.md", text)
         self.assertNotIn("references/dashboard-schema.md", text)
+        self.assertNotIn("### “部分接受”必须继续实施", text)
 
 
 if __name__ == "__main__":
