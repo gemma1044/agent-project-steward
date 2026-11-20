@@ -92,7 +92,7 @@ stateDiagram-v2
 - Codex：`codex exec resume <id>`、App 的线程工具都可派单、续接、等待。
 - Claude Code：`claude -p --resume <id>` / `--session-id` 可续接；员工必须是顶层会话，不能用会话内 sub-agent。
 - OpenClaw：`sessions_spawn` / `sessions_send` 可调 Codex 与 Claude Code；后台命令发完成通知会被丢弃，需改用 `sessions_yield` 或台账。
-- Antigravity：会话接口尚未核实，首次使用前实测。
+- Antigravity：已核实（2026-11-20，`agy` 1.5.13），`agy -p --output-format json` 与 `--conversation <id>` 可同步派单、续接并用 `--settings` 按目录放行权限，长任务以台账加巡检回传；桌面 App 的 `agentapi` 需人工批准，不用于无人值守派单。
 - 三方都不提供跨运行时的待审台账，这是本方案要补的部分。
 
 ## 本期交付
@@ -105,5 +105,4 @@ stateDiagram-v2
 ## 不做什么（本期）
 
 - 不写台账读写脚本、会话结束钩子和手机 App 接入代码，只定义契约。
-- 不实测 Antigravity 接口。
 - 不把这些规则自动下发到已派生的子仓库管家；按母版管家的三方同步流程另行处理。
