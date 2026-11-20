@@ -1,4 +1,4 @@
 interface:
   display_name: "Agent Stud"
   short_description: "Coordinate missions, sessions, evidence, and acceptance"
-  default_prompt: "Use $project-steward to inspect this project, propose a session plan, and ask for resource approval before delegating work."
+  default_prompt: "Use $project-steward to inspect this project, propose a session plan within the worker budget, and ask for approval only beyond it."
