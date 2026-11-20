@@ -8,12 +8,12 @@
 
 | 能力 | Codex | Claude Code | Antigravity | OpenClaw（大总管常用） |
 |---|---|---|---|---|
-| 新建 Session 并拿到标识 | App：`create_thread`；CLI：`codex exec --json` 的事件流里有线程 ID（已核实） | CLI：`claude -p --session-id <uuid>` 指定新会话 ID（已核实）；桌面版：新建会话工具 | 未核实 | `sessions_spawn`，`runtime: "acp"` 可指定 `agentId` 为 codex 或 claude（已核实） |
-| 向已有 Session 追加一轮 | App：`send_message_to_thread`；CLI：`codex exec resume <SESSION_ID> "<prompt>"`（已核实） | CLI：`claude -p --resume <session-id> "<prompt>"`（已核实）；桌面版：会话间发消息工具 | 未核实 | `sessions_send`；续接旧会话依赖目标支持 `session/load`，Codex 与 Claude Code 支持（已核实） |
-| 等待结束或需关注 | App：`wait_threads` | 无内建跨会话等待；用 `-p` 同步运行，或靠会话结束钩子写台账 | 未核实 | `sessions_yield` |
-| 发现全部 Session | App：`list_threads` / `list_archived_threads` | 本机会话记录目录；桌面版：会话列表工具 | 未核实 | 会话列表工具 |
-| 会话结束钩子 | 配置 `notify` 命令，回合结束时调用 | `settings.json` 的 `Stop` / `SessionEnd` hook | 未核实 | 不适用 |
-| 指定模型 | 创建时传模型参数 | `--model` | 未核实 | 由 `agentId` 对应运行时决定 |
+| 新建 Session 并拿到标识 | App：`create_thread`；CLI：`codex exec --json` 的事件流里有线程 ID（已核实） | CLI：`claude -p --session-id <uuid>` 指定新会话 ID（已核实）；桌面版：新建会话工具 | CLI：`agy -p "<任务>" --output-format json`，返回 JSON 含 `conversation_id`、`status`、`response`、`denied_actions`；`agy acp` 提供 ACP stdio 服务，已核实（2026-11-20，agy 1.5.13） | `sessions_spawn`，`runtime: "acp"` 可指定 `agentId` 为 codex 或 claude（已核实） |
+| 向已有 Session 追加一轮 | App：`send_message_to_thread`；CLI：`codex exec resume <SESSION_ID> "<prompt>"`（已核实） | CLI：`claude -p --resume <session-id> "<prompt>"`（已核实）；桌面版：会话间发消息工具 | CLI：`agy -p "<追加指令>" --conversation <conversation_id>` 续接同一对话；`-c` / `--continue` 续最近一个对话，已核实（2026-11-20，agy 1.5.13） | `sessions_send`；续接旧会话依赖目标支持 `session/load`，Codex 与 Claude Code 支持（已核实） |
+| 等待结束或需关注 | App：`wait_threads` | 无内建跨会话等待；用 `-p` 同步运行，或靠会话结束钩子写台账 | 无内建跨会话等待；`agy -p` 同步执行，进程结束即一轮完成，返回后读 JSON；长任务以“员工写台账 + 管家巡检”为准，已核实（2026-11-20，agy 1.5.13） | `sessions_yield` |
+| 发现全部 Session | App：`list_threads` / `list_archived_threads` | 本机会话记录目录；桌面版：会话列表工具 | 未核实列举全部会话命令；派单返回 `conversation_id` 由管家记录，`-c` / `--continue` 续最近对话（2026-11-20，agy 1.5.13） | 会话列表工具 |
+| 会话结束钩子 | 配置 `notify` 命令，回合结束时调用 | `settings.json` 的 `Stop` / `SessionEnd` hook | 未核实到会话结束钩子或推送通知；长任务以“员工写台账 + 管家巡检”为准（2026-11-20，agy 1.5.13） | 不适用 |
+| 指定模型 | 创建时传模型参数 | `--model` | `--model`（`agy models` 列出可用模型），另支持 `--effort`、`--mode`（`accept-edits` / `auto` / `plan`）、`--add-dir`、`--project`、`--print-timeout`，已核实（2026-11-20，agy 1.5.13） | 由 `agentId` 对应运行时决定 |
 
 ## 各运行时注意事项
 
@@ -30,8 +30,11 @@
 
 ### Antigravity
 
-- 本仓库尚未核实其会话创建、续接、跨会话消息和钩子接口。在某个项目首次用作项目管家或员工前，先实测上表各项，把结果写入该项目的 `references/local/repository-rules.md`，再提 upstream candidate 更新本表。
-- 实测完成前，Antigravity 上的员工只能用“员工写台账 + 管家巡检”的方式回传，不能声称已有事件通知。
+- **派单与参数**：员工统一使用 Homebrew cask `antigravity-cli` 安装的 `agy`（2026-11-20 本机实测版本 1.5.13）。用 `agy -p "<任务>" --output-format json` 无人值守执行一轮，返回 JSON 包含 `conversation_id`、`status`、`response`、`denied_actions`。另支持 `--model`（`agy models` 列出可用模型）、`--effort`、`--mode`（`accept-edits` / `auto` / `plan`）、`--add-dir`、`--project`、`--print-timeout`；`agy acp` 提供 ACP stdio 服务。
+- **续接**：用 `agy -p "<追加指令>" --conversation <conversation_id>` 续接同一对话并保留上文；`-c` / `--continue` 续接最近一个对话。
+- **按目录放行权限**：无人值守时，需要授权的工具调用（如 `write_file`）会被自动拒绝并列在 `denied_actions`。派单时用 `--settings '{"permissions":{"allow":["write_file(<目录绝对路径>/**)"]}}'` 只对本次会话放行指定目录，不写入全局设置；macOS 上 `/tmp` 要写成解析后的真实路径 `/private/tmp`。`--dangerously-skip-permissions` 会放行全部工具，管家默认不用。
+- **回传方式**：`agy -p` 是同步的，进程结束即一轮完成，管家可在命令返回后直接读 JSON；未核实到会话结束钩子或推送通知，长任务仍以“员工写台账 + 管家巡检”为准。
+- **不用 `agentapi`**：桌面 App 自带的 `agentapi`（`~/.gemini/antigravity/bin/agentapi`）也能开对话，但对话不绑定工作区，写文件会停在 App 里等人批准，不适合无人值守派单；员工统一用 `agy`。
 
 ### OpenClaw
 
