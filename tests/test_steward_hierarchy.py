@@ -59,6 +59,21 @@ class StewardHierarchyTests(unittest.TestCase):
         for wid in waiting:
             self.assertTrue(any(f["worker_id"] == wid and f["blocking"] for f in data["files"]))
 
+    def test_items_only_cover_human_steps(self):
+        self.assertIn("只把需要人做的步骤列成事项", self.project)
+        ledger = (PROJECT / "references/review-ledger.md").read_text(encoding="utf-8")
+        self.assertIn("事项拆分门", ledger)
+        self.assertIn("why_human", ledger)
+        self.assertIn("不区分“里程碑”和“事项”", ledger)
+        self.assertIn("不用多维表格或电子表格当用户界面", ledger)
+        self.assertIn("不把 AI 的执行步骤列成一二三", self.chief)
+        data = json.loads((PROJECT / "examples/review-ledger.example.json").read_text(encoding="utf-8"))
+        files = {f["id"]: f for f in data["files"]}
+        for item in data["items"]:
+            self.assertTrue(item["why_human"])
+            if item["source"] == "review":
+                self.assertEqual(files[item["file_id"]]["status"], "pending_user")
+
     def test_chief_steward_boundaries(self):
         for anchor in ("不审专业内容", "不判汇报等级", "不派员工", "不替用户批复", "保留原话", "按需读取"):
             self.assertIn(anchor, self.chief)
