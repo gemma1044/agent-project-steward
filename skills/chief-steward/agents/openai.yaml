@@ -1,0 +1,4 @@
+interface:
+  display_name: "Chief Steward"
+  short_description: "Relay messages, track what waits for you, keep your to-dos and schedule"
+  default_prompt: "Use $chief-steward to list what is waiting for my review across projects and relay my decisions to the project stewards."

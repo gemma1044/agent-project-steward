@@ -11,13 +11,14 @@ Agent Stud 把这些问题变成一套明确的工作机制：先盘点和去重
 ## 包含什么
 
 - `project-steward`：仓库管家。协调单个仓库里的 Mission、Session、资源申请、回传和验收。
-- `portfolio-steward`：大总管。把 `project-steward` 完整复制到新仓库，记录复制血缘和本地定制，并汇总子管家的可复用进化候选。
+- `chief-steward`：大总管。个人管家体系的最上层，用低成本模型传话、管理事项与日程、列出等你审的文件；不审专业内容。
+- `portfolio-steward`：母版管家。把 `project-steward` 完整复制到新仓库，记录复制血缘和本地定制，并汇总子管家的可复用进化候选。
 
 对外叫 **Agent Stud**；为兼容已有安装和调用方式，核心 Skill 的技术标识仍是 `project-steward`。
 
 `project-steward` 保留 Codex 多任务协作机制，包括语义化标题、原 Session 优先、`wait_threads` 事件等待、heartbeat 巡检、`send_message_to_thread` 终态回传、上下文衰竭交接、独立复核和主动汇报。
 
-大总管直接督办跨仓库 Session 时也使用同一套运行协议。权威正文仍在 `project-steward/SKILL.md`；仓库通过确定性脚本生成 `portfolio-steward` 内部的自包含副本，避免安装后依赖跨目录引用：
+母版管家直接督办跨仓库 Session 时也使用同一套运行协议。权威正文仍在 `project-steward/SKILL.md`；仓库通过确定性脚本生成 `portfolio-steward` 内部的自包含副本，避免安装后依赖跨目录引用：
 
 ```bash
 python3 scripts/sync_runtime_protocol.py
@@ -26,6 +27,18 @@ python3 scripts/sync_runtime_protocol.py --check
 
 修改仓库管家运行协议后必须重新生成；CI 会在投影过期时失败。该同步只负责两级管家的运行协议，不等于把母版升级自动应用到子仓库。
 
+## 三层管家与汇报等级
+
+个人使用时，三个角色按需要的判断力分配模型：
+
+| 角色 | 职责 | 模型档位 |
+|---|---|---|
+| 大总管 `chief-steward` | 传话、事项与日程、待审清单 | 低成本 |
+| 项目管家 `project-steward` | 懂业务，出方案、派员工、审员工产出、决定汇报等级 | 强推理 |
+| 员工（执行 Session） | 一个任务一个 Session，实现和产出文件 | 执行档 |
+
+员工的重要产出以文件交接并写入共用的待审台账。文件分四级：L0 员工自理、L1 项目管家审、L2 上报用户、L3 用户提级盯防。技术细节到 L1 为止，只有产品决策经项目群上报给用户。设计见 [docs/plans/steward-hierarchy/solution.md](docs/plans/steward-hierarchy/solution.md)，台账契约见 `skills/project-steward/references/review-ledger.md`，跨 Codex / Claude Code / Antigravity / OpenClaw 的接口对照见 `skills/project-steward/references/runtimes.md`。
+
 ## Core 与仓库规则
 
 派生一个仓库管家时，Agent Stud 仍会先复制完整 Skill；但它把规则分为两个归属明确的层：
@@ -33,7 +46,7 @@ python3 scripts/sync_runtime_protocol.py --check
 - **Core**：Skill 本体和非 `local` reference，是可审查、可升级的跨仓库协作机制。
 - **Local**：`references/local/`，由该业务仓库 always-owned。这里存放架构、测试、发布、隐私和团队约定；上游更新永远不会覆盖它。
 
-管家每次自进化先判断归属：依赖当前仓库事实的规则直接进入 local；跨仓库成立且已脱敏、经验证的规则才交给大总管审查为 upstream candidate。这样不需要定期手工同步母版，也不会把一个仓库的私有约束误写成全局规则。
+管家每次自进化先判断归属：依赖当前仓库事实的规则直接进入 local；跨仓库成立且已脱敏、经验证的规则才交给母版管家审查为 upstream candidate。这样不需要定期手工同步母版，也不会把一个仓库的私有约束误写成全局规则。
 
 ## Dashboard
 

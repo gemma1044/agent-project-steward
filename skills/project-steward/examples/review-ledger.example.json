@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "note": "Synthetic example. No real project, session, or link.",
+  "workers": [
+    {
+      "id": "w-001",
+      "project": "sample-app",
+      "task": "Rewrite the checkout retry logic",
+      "runtime": "codex",
+      "session_id": "00000000-0000-4000-8000-000000000001",
+      "parent_session_id": "00000000-0000-4000-8000-0000000000aa",
+      "model": "execution-tier-model",
+      "status": "waiting_review",
+      "watch": false,
+      "updated_at": "2026-01-05T09:30:00Z"
+    },
+    {
+      "id": "w-002",
+      "project": "sample-app",
+      "task": "Draft the onboarding redesign proposal",
+      "runtime": "antigravity",
+      "session_id": "sample-antigravity-session-2",
+      "parent_session_id": "00000000-0000-4000-8000-0000000000aa",
+      "model": "execution-tier-model",
+      "status": "running",
+      "watch": true,
+      "updated_at": "2026-01-05T10:00:00Z"
+    },
+    {
+      "id": "w-003",
+      "project": "sample-app",
+      "task": "Collect flaky test evidence",
+      "runtime": "claude-code",
+      "session_id": "00000000-0000-4000-8000-000000000003",
+      "parent_session_id": "00000000-0000-4000-8000-0000000000aa",
+      "model": "execution-tier-model",
+      "status": "done",
+      "watch": false,
+      "updated_at": "2026-01-04T18:00:00Z"
+    }
+  ],
+  "files": [
+    {
+      "id": "f-101",
+      "project": "sample-app",
+      "worker_id": "w-001",
+      "title": "Retry strategy design",
+      "kind": "plan",
+      "location": "docs/plans/retry-strategy.md",
+      "ask": "Confirm exponential backoff with idempotency keys instead of a queue.",
+      "level": "L1",
+      "level_suggested_by_worker": "L1",
+      "status": "pending_manager",
+      "blocking": true,
+      "decision": null,
+      "decided_by": null,
+      "created_at": "2026-01-05T09:30:00Z",
+      "updated_at": "2026-01-05T09:30:00Z"
+    },
+    {
+      "id": "f-102",
+      "project": "sample-app",
+      "worker_id": "w-001",
+      "title": "Show a retry banner to users",
+      "kind": "plan",
+      "location": "docs/plans/retry-banner.md",
+      "ask": "Should users see a visible 'retrying payment' banner, or should retries stay silent?",
+      "level": "L2",
+      "level_suggested_by_worker": "L1",
+      "status": "pending_user",
+      "blocking": false,
+      "decision": null,
+      "decided_by": null,
+      "created_at": "2026-01-05T09:40:00Z",
+      "updated_at": "2026-01-05T09:55:00Z"
+    },
+    {
+      "id": "f-103",
+      "project": "sample-app",
+      "worker_id": "w-002",
+      "title": "Onboarding redesign draft",
+      "kind": "doc",
+      "location": "https://example.com/doc/onboarding-draft",
+      "ask": "Pick one of the two onboarding flows.",
+      "level": "L3",
+      "level_suggested_by_worker": "L2",
+      "status": "pending_user",
+      "blocking": true,
+      "decision": null,
+      "decided_by": null,
+      "created_at": "2026-01-05T10:00:00Z",
+      "updated_at": "2026-01-05T10:00:00Z"
+    },
+    {
+      "id": "f-104",
+      "project": "sample-app",
+      "worker_id": "w-003",
+      "title": "Flaky test log",
+      "kind": "report",
+      "location": "artifacts/flaky-tests.txt",
+      "ask": "",
+      "level": "L0",
+      "level_suggested_by_worker": "L0",
+      "status": "archived",
+      "blocking": false,
+      "decision": null,
+      "decided_by": null,
+      "created_at": "2026-01-04T18:00:00Z",
+      "updated_at": "2026-01-04T18:00:00Z"
+    }
+  ],
+  "items": [
+    {
+      "id": "i-201",
+      "project": "sample-app",
+      "task": "Retry banner",
+      "title": "Decide whether users see a 'retrying payment' banner",
+      "source": "review",
+      "file_id": "f-102",
+      "why_human": "decision",
+      "due": null,
+      "scheduled": "2026-01-05",
+      "status": "open"
+    },
+    {
+      "id": "i-202",
+      "project": "sample-app",
+      "task": "Onboarding redesign",
+      "title": "Pick one of the two onboarding flows",
+      "source": "review",
+      "file_id": "f-103",
+      "why_human": "decision",
+      "due": "2026-01-06",
+      "scheduled": "2026-01-05",
+      "status": "open"
+    },
+    {
+      "id": "i-203",
+      "project": "sample-app",
+      "task": "Retry banner",
+      "title": "Approve the payment provider sandbox access request",
+      "source": "steward",
+      "file_id": null,
+      "why_human": "authorization",
+      "due": null,
+      "scheduled": "2026-01-06",
+      "status": "open"
+    },
+    {
+      "id": "i-204",
+      "project": null,
+      "task": null,
+      "title": "Reply to the design partner about the review date",
+      "source": "user",
+      "file_id": null,
+      "why_human": "outreach",
+      "due": null,
+      "scheduled": "2026-01-05",
+      "status": "open"
+    }
+  ]
+}
